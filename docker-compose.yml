@@ -1,0 +1,36 @@
+version: "3.5"
+services:
+  web_server:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: Nginx/Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - app
+  app:
+    container_name: django
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: DB/database.conf
+    stdin_open: true
+    tty: true
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    depends_on:
+      - database
+  database:
+    container_name: postgres
+    image: postgres:latest
+    env_file: DB/database.conf
+    ports:
+      - 5432:5432
+    volumes:
+      - db_volume:/var/lib/postgresql
+
+volumes:
+  db_volume: 
